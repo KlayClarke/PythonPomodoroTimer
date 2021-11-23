@@ -11,11 +11,15 @@ WORK_MIN = 25
 SHORT_BREAK_MIN = 5
 LONG_BREAK_MIN = 20
 reps = 0
+check = '✔'
 
 
 # ---------------------------- TIMER RESET ------------------------------- #
+def reset_timer():
+    canvas.itemconfig(timer_text, text='00:00')
 
-# ---------------------------- TIMER MECHANISM ------------------------------- # 
+
+# ---------------------------- TIMER MECHANISM ------------------------------- #
 
 def start_timer():
     global reps
@@ -26,15 +30,15 @@ def start_timer():
     count_down(1 * 60)
 
     reps += 1
-    if reps == 8:
+    if reps % 8 == 0:
         count_down(long_break_sec)
-        timer_label.config(text='LONG BREAK')
+        timer_label.config(text='BREAK', fg=RED)
     elif reps % 2 == 0:
         count_down(short_break_sec)
-        timer_label.config(text='SHORT BREAK')
+        timer_label.config(text='BREAK', fg=PINK)
     else:
         count_down(work_sec)
-        timer_label.config(text='WORK')
+        timer_label.config(text='WORK', fg=GREEN)
 
 
 # ---------------------------- COUNTDOWN MECHANISM ------------------------------- #
@@ -50,10 +54,15 @@ def count_down(count):
         window.after(1000, count_down, count - 1)
     else:
         start_timer()
+        mark = ''
+        work_sessions = math.floor(reps/2)
+        for _ in range(work_sessions):
+            mark += '✔'
+        timer_check.config(text=mark)
+
 
 
 # ---------------------------- UI SETUP ------------------------------- #
-
 window = Tk()
 window.title('Pomodoro')
 window.config(padx=100, pady=50, bg=YELLOW)
@@ -70,10 +79,10 @@ canvas.grid(column=2, row=1)
 start_button = Button(text='Start', highlightthickness=0, command=start_timer)
 start_button.grid(column=1, row=2)
 
-reset_button = Button(text='Reset', highlightthickness=0)
+reset_button = Button(text='Reset', highlightthickness=0, command=reset_timer)
 reset_button.grid(column=3, row=2)
 
-timer_check = Label(text='✔', fg=GREEN, bg=YELLOW, pady=15)
+timer_check = Label(fg=GREEN, bg=YELLOW, pady=15)
 timer_check.grid(column=2, row=2)
 
 window.mainloop()
